@@ -26,7 +26,7 @@ button{width:100%;padding:11px;font-size:16px;border:0;border-radius:8px;backgro
 <script>
 /* Todo dentro de una función: el dashboard que se abre usa sus propias variables globales (ej. D). */
 (function(){
-const X={"sal": "zGx5qwEg+ETrxq1XAAgZkQ==", "it": 600000, "iv": "UMcLjTrStR9pI8+c", "ct": "pbh1QozYjEKX09+L7hH2nnBPiPE8134zDpGm+w6/8rstmwO/Rg+HxAWApOlIYsdE+QfYc3W20xLjO82rFDHeUHdG+0KEr0uhKIFATbYPqBBljyTWHH+LLF2f8s6DApYh1fJipnCYQUkHadnqnHQn0CUsYhGvC+l6+6vVawvDigVI72D0UX67EA+j3reVjbQupfhcXJF/oVlcBmCR1Ep/HhwPthMqOQPLBgi8MNwxHBBGFfrU0h39H4jEsJVcpdyan0nPxt4er0zVqBQzT8FYypI6VbS8Yqi/yYnrom/QhFixFhu/UcfzgST+vn0sUy4qFU61xwMGwnj/pVhuzJFa7uiMKwbVzvpOpep9doVTyk+DLQ27SLuEZuGOf2t60PGRD1BZtw+rElwLZyLvAPy7twtSCH/+sJtAv6CUMUpLuMOAntx/+mZJyO8DMIuNXZF38AW+PSgWDw=="};
+const X={"sal": "zGx5qwEg+ETrxq1XAAgZkQ==", "it": 600000, "iv": "vG78vHNLoKihCqz+", "ct": "wH3WIMKtcZh6B0MVjdZ3I3Gvx4YusThq9ENhGIzDh8sr85Xnz4LY4nF64YCUkauaeUKTeKZVVFU4y4x6M+AnKtfZ6Ce7fR539nXD7BxvuhQtK1ycmfndHhoNyiYrOuz9IZS6GZ9eK+sUxlACQT5+WmS4x5m5J21LQ35K7FBG6EFh0FpGVy5d7sxNfZI8F7ym9pSNgEgpMlcX6lX8/NWYdFptaCsQcJ9qXibdVSCG/Hrllo6H7czNfak18wOXE4DjDJoVGnrP3BrgiZ+/7qr61MNyYeMtEwmKWMUB/Ie8LYAchRBa3PG7GVQsyX00/LywI+G+H++f0jXwm3FYCBgtu1c1mWA/gDAbdWWCQ/oHzQ5mZhjTYJMVHvZ0bBio+8WB2lqrkv1NxtcyiCzLAXVUD/45ySDrvkTXTikZSKzTj7ZTzset2uUvS0SUjfHhkKSnCCPJ5D7q7A=="};
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 const K="fdt_llave_"+X.sal;
 async function llave(clave){
@@ -37,7 +37,9 @@ async function descifrar(bits){
   const k=await crypto.subtle.importKey("raw",bits,"AES-GCM",false,["decrypt"]);
   return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(X.iv)},k,b64(X.ct)));
 }
-function mostrar(html){document.open();document.write(html);document.close();}
+/* Reemplazar la página solo cuando terminó de cargar; si no, el dashboard queda pegado debajo del formulario. */
+const cargada=new Promise(r=>{if(document.readyState==="complete")r();else window.addEventListener("load",()=>setTimeout(r,0));});
+async function mostrar(html){await cargada;document.open();document.write(html);document.close();}
 function guardada(){try{const v=localStorage.getItem(K)||sessionStorage.getItem(K);return v?b64(v):null}catch(e){return null}}
 function guardar(bits,rec){const v=btoa(String.fromCharCode(...bits));
   try{sessionStorage.setItem(K,v)}catch(e){}
